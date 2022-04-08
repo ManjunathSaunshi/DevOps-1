@@ -6,6 +6,7 @@ pipeline {
             steps{
                 echo "checkout code from SCM like Github URL"
             }
+        }
 
         stage('Build'){
             steps{
@@ -29,5 +30,4 @@ pipeline {
         }
             
         }
-    }
-}
+ }
