@@ -28,7 +28,7 @@ pipeline {
             }
         }
 
-        stage('Upload artifacts-jfrog'){
+        stage('Upload to Nexus'){
             steps{
                 nexusArtifactUploader artifacts: [[
                     artifactId: 'valaxy',
