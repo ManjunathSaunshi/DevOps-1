@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+
+    environment{
+        PATH="$PATH:/usr/local/src/apache-maven/bin"
+    }
+
+    stages{
+        stage('Get Code'){
+            steps{
+                git 'https://github.com/ManjunathSaunshi/javaloginapp.git'
+            }
+          }
+        
+        stage('Build'){
+            steps{
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('sonarQube Analysis'){
+            //scannerHome=tool 'sonarscanner 4.0'
+            steps{
+                withSonarQubeEnv('sonarqube-8.9.8'){
+                    sh '${scannerHome}/bin/sonar-scanner'
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
+
+        stage('Upload artifacts-jfrog'){
+            steps{
+                nexusArtifactUploader artifacts: [[
+                    artifactId: 'valaxy',
+                     classifier: '', 
+                     file: 'target/valaxy-2.0-RELEASE.war', 
+                     type: 'war']], 
+                     credentialsId: 'artifactory-cred', 
+                     groupId: 'in.valaxy', 
+                     nexusUrl: '13.234.30.197', 
+                     nexusVersion: 'nexus3', 
+                     protocol: 'http',
+                     repository: 'http://13.234.30.197:8081/repository/java-artifacts-repo/', 
+                     version: '2.0-RELEASE'
+            }
+        }
+    }
+}
